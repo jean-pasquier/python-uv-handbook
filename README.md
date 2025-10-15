@@ -3,27 +3,68 @@
 
 ## Prerequisites
 
+Install uv
+
 ```shell
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# or
 brew install uv
 ```
 
+See [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/)
+
+
+## Comparison within Python ecosystem
+
+| Feature                 | pyenv | pip | pipx | twine | poetry | uv |
+|-------------------------|-------|-----|------|-------|--------|----|
+| Managed python versions | √     |     |      |       |        | √  |
+| Manage app dependencies |       | √   |      |       | √      | √  |
+| Run tools               |       |     | √    |       |        | √  |
+| Build app               |       |     |      |       | √      | √  |
+| Publish app             |       |     |      | √     | √      | √  |
+
+
+### Compare with Poetry
+
+| Concept              | poetry                  | uv                  |
+|----------------------|-------------------------|---------------------|
+| config file name     | pyproject.toml          | pyproject.toml      |
+| lock file name       | poetry.lock             | uv.lock             |
+| manage dependencies  | poetry add/remove <dep> | uv add/remove <dep> |
+| install dependencies | poetry install          | uv sync             |
+| run app/script       | poetry run <script>     | uv run <script>     |
+
+uv is quite similar to poetry commands
+
+
 ## How to
+
+See all features on [uv documentation](https://docs.astral.sh/uv/getting-started/features/)
+
+### Manage python (same as pyenv)
 
 ```shell
 uv python install 3.13
-uv venv -p 3.13
-uv sync
-uv run hello
 ```
 
-## Tools
+### Install, build and run application 
+
+```shell
+uv venv -p 3.13
+uv sync
+uv run hello  # hello is defined in pyproject.toml as `project.scripts` to run test_uv/app.py:main function
+# almost equivalent of (because main() is called in app.py's __main__ section)
+uv run src/test_uv/app.py
+```
+
+## Use tools
 
 
 ### Option 1: tool as app dependency
 
 ```shell
 uv add ruff --dev
-
 ```
 
 ruff is installed in application venv
@@ -31,7 +72,7 @@ ruff is installed in application venv
 
 ### Option 2: tool as uv tool
 
-The uv tools are installed in a separate venv from our application. This works because ruff does not need application installed (only source code).
+The uv tools are installed in a separate venv from our application. This works because ruff does not need application installed (only source code):
 
 ```shell
 # Equivalent
@@ -48,6 +89,7 @@ But this fails because pytest requires to import our application modules:
 
 ```shell
 uvx pytest tests/
+# Throws the error: No module named 'test_uv'
 
 # pytest must be installed as app dependency
 uv add pytest --dev
@@ -101,3 +143,7 @@ Some libraries are heavy
 uv cache clean  # all lib
 uv cache clean ruff torch  # specific libs
 ```
+
+
+## Docker
+
