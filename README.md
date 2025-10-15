@@ -147,3 +147,30 @@ uv cache clean ruff torch  # specific libs
 
 ## Docker
 
+uv provides several ways to use uv in docker:
+1. Distroless Docker images (do not contain anything but the uv binaries)
+2. Derived images including an operating system with uv pre-installed
+
+
+### Using distroless
+
+```dockerfile
+FROM python:3.12-slim-trixie 
+# or any safely built python image
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+```
+
+
+### Using derived image
+
+```shell
+docker run --rm -it ghcr.io/astral-sh/uv:debian uv --help
+```
+
+### Best practices
+
+* Compiling bytecode: `UV_COMPILE_BYTECODE` 
+* Caching: `UV_CACHE_DIR`
+* Link mode to "copy": `UV_LINK_MODE`
+* Example of [multistage build](https://github.com/astral-sh/uv-docker-example/blob/main/multistage.Dockerfile)
